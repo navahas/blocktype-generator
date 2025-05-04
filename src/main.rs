@@ -31,7 +31,7 @@ fn load_font(path: &str) -> std::io::Result<HashMap<char, Vec<String>>> {
 
 fn main() -> std::io::Result<()> {
     let font = load_font("./font.txt")?;
-    let input = "sessionizer".to_uppercase();
+    let input = "carlos".to_uppercase();
     let height = font.get(&'A').map(|v| v.len()).unwrap_or(0);
 
     for row in 0..height {
