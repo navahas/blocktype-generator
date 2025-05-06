@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs;
+use std::{fs, io};
 
 fn load_font(path: &str) -> std::io::Result<HashMap<char, Vec<String>>> {
     let text = fs::read_to_string(path)?;
@@ -29,10 +29,15 @@ fn load_font(path: &str) -> std::io::Result<HashMap<char, Vec<String>>> {
     Ok(map)
 }
 
-fn main() -> std::io::Result<()> {
-    let font = load_font("./font.txt")?;
-    let input = "carlos".to_uppercase();
-    let height = font.get(&'A').map(|v| v.len()).unwrap_or(0);
+fn print_word(word: &str, font_name: &str) -> io::Result<()> {
+    let font_path = format!("./{}.txt", font_name);
+    let font = load_font(&font_path)?;
+    let input = word.to_uppercase();
+
+    let height = font.get(&'A').map(|lines| lines.len()).unwrap_or_else(|| {
+        eprintln!("Warning: Font for 'A' not found. Defaulting height to 0.");
+        0
+    });
 
     for row in 0..height {
         for ch in input.chars() {
@@ -47,3 +52,10 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+fn main() {
+    let word = "codecrypto";
+    let font = "font";
+    if let Err(e) = print_word(word, font) {
+        eprintln!("Error painting word: {}", e)
+    }
+}
