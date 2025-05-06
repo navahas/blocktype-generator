@@ -1,12 +1,12 @@
 use std::collections::HashMap;
-use std::{fs, io, env};
+use std::{io, env};
 
-fn load_font(path: &str) -> std::io::Result<HashMap<char, Vec<String>>> {
-    let text = fs::read_to_string(path)?;
+fn load_font_embedded() -> HashMap<char, Vec<String>> {
+    let text = include_str!("../block.txt");
     let mut map = HashMap::new();
 
     let mut lines = text.lines()
-        .filter(|l| !l.trim_start().starts_with('#'))  // strip comments
+        .filter(|l| !l.trim_start().starts_with('#'))
         .peekable();
 
     while let Some(key_line) = lines.next() {
@@ -26,12 +26,12 @@ fn load_font(path: &str) -> std::io::Result<HashMap<char, Vec<String>>> {
         }
         map.insert(ch, glyph);
     }
-    Ok(map)
+
+    map
 }
 
-fn print_word(word: &str, font_name: &str) -> io::Result<()> {
-    let font_path = format!("./{}.txt", font_name);
-    let font = load_font(&font_path)?;
+fn print_word(word: &str) -> io::Result<()> {
+    let font = load_font_embedded();
     let input = word.to_uppercase();
 
     let height = font.get(&'A').map(|lines| lines.len()).unwrap_or_else(|| {
@@ -54,8 +54,7 @@ fn print_word(word: &str, font_name: &str) -> io::Result<()> {
 
 fn main() {
     let word = env::args().nth(1).expect("Usage: cli <word>");
-    let font = "block";
-    if let Err(e) = print_word(&word, font) {
+    if let Err(e) = print_word(&word) {
         eprintln!("Error painting word: {}", e)
     }
 }
