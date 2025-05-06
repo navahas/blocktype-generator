@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::{fs, io};
+use std::{fs, io, env};
 
 fn load_font(path: &str) -> std::io::Result<HashMap<char, Vec<String>>> {
     let text = fs::read_to_string(path)?;
@@ -53,9 +53,9 @@ fn print_word(word: &str, font_name: &str) -> io::Result<()> {
 }
 
 fn main() {
-    let word = "codecrypto";
-    let font = "font";
-    if let Err(e) = print_word(word, font) {
+    let word = env::args().nth(1).expect("Usage: cli <word>");
+    let font = "block";
+    if let Err(e) = print_word(&word, font) {
         eprintln!("Error painting word: {}", e)
     }
 }
